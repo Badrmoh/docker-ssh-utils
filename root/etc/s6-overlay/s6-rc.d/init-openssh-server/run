@@ -1,0 +1,67 @@
+#!/command/with-contenv bash
+
+DHOME=${DHOME:-/home/$DUSER}
+SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
+
+# Check if SSH host keys are missing
+if [ ! -f $SSH_HOST_KEY_DIR/ssh_host_rsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ecdsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ed25519_key ]; then
+  echo "🔑 Generating SSH Host Keys..."
+  ssh-keygen -A
+  # Check if the host directory exists. Create it if needed
+  if [ ! -d $SSH_HOST_KEY_DIR ]; then
+    mkdir -p $SSH_HOST_KEY_DIR
+  fi
+  mv /etc/ssh/ssh_host_*_key $SSH_HOST_KEY_DIR/
+  mv /etc/ssh/ssh_host_*_key.pub $SSH_HOST_KEY_DIR/
+fi
+
+#########################################
+# OpenSSH Server configuration
+#
+echo "🤖 Setting OpenSSH Server configuration..."
+{
+  echo "Port ${SSH_PORT}"
+  echo "PermitRootLogin no"
+  echo "PermitEmptyPasswords no"
+  echo "PasswordAuthentication no"
+  echo "MaxAuthTries 5"
+  echo "LoginGraceTime 20"
+  echo "ChallengeResponseAuthentication no"
+  echo "X11Forwarding no"
+  echo "AllowAgentForwarding yes"
+  echo "AllowTcpForwarding yes"
+  echo "PermitTunnel yes"
+  echo "PidFile ${DHOME}/.ssh/ssh.pid"
+  echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_rsa_key"
+  echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ecdsa_key"
+  echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ed25519_key"
+} > /etc/ssh/sshd_config.d/custom.conf
+
+##########################################
+# Prepare User's SSH dir
+#
+echo "📂 Creating User SSH dirs ..."
+mkdir -p ${DHOME}/.ssh
+mkdir -p ${SSH_PRIVATE_KEYS_DIR}
+##########################################
+# Add authorized keys
+#
+if [[ ${SSHD_ENABLED,,} == "true" ]]
+  then
+  SSH_PUBLIC_KEYS=($(env | grep SSH_PUBLIC_KEY))
+  echo "🗄 Adding public keys to user's authorized keys ..."
+  if [[ ${#SSH_PUBLIC_KEYS[@]} -gt 0 ]]
+  then
+    for k in ${SSH_PUBLIC_KEYS[@]}; do
+       s6-printenv $k | tee -a ${DHOME}/.ssh/authorized_keys 
+    done
+  fi
+fi
+###########################################
+# Set Correct ownership
+#
+echo "🎫 Set correct ownership of user's home directory ..."
+chown -R ${DUSER}:${PGROUP} ${DHOME}/.ssh
+chown -R ${DUSER}:${PGROUP} ${SSH_PRIVATE_KEYS_DIR}
+chmod 700 ${DHOME}/.ssh
+chmod 700 ${SSH_PRIVATE_KEYS_DIR}

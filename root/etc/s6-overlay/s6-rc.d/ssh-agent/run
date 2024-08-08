@@ -1,0 +1,26 @@
+#!/command/with-contenv bash
+
+SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-$DHOME/.ssh/ssh-agent.sock}
+SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
+
+echo "🚀 Starting SSH Agent..."
+s6-setuidgid "${DUSER}" /usr/bin/ssh-agent -a ${SSH_AUTH_SOCK} \
+  | grep PID \
+  | cut -d ';' -f 1 \
+  | cut -d '=' -f 2 > /var/run/s6/container_environment/SSH_AGENT_PID
+
+cd ${SSH_PRIVATE_KEYS_DIR}
+SSH_KEYS=($(ls))
+if [[ ${#SSH_KEYS[@]} -gt 0 ]]
+then
+  for key in ${SSH_KEYS[@]}
+  do
+    # match only private keys 
+    if [[ $(grep -w BEGIN $key 2> /dev/null)  ]]
+    then
+      echo "➕🔑 Adding SSH Keys from ${SSH_PRIVATE_KEYS_DIR} to Agent"
+      cat $key | ssh-add -   
+    fi
+  done
+fi
+

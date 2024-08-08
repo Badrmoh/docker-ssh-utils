@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+
+FROM alpine:3.20.2
+
+LABEL MAINTAINER=engbadr@outlook.com
+
+ENV S6_OVERLAY_VERSION=3.2.0.0
+
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
+
+ENV DUID=1001 \
+    DGID=1001 \
+    DUSER="ssh-user" \
+    DGROUP="ssh-user" \
+    DHOME="/home/ssh-user" \
+    SSH_PORT=2222
+
+ENV SSH_HOST_KEY_DIR="${DHOME}/.ssh/ssh_host_keys" \
+    SSH_AUTH_SOCK="${DHOME}/.ssh/ssh-agent.sock" \
+    SSH_PRIVATE_KEYS_DIR="${DHOME}/.ssh/private" \
+    LC_ALL="en_US.UTF-8" \
+    LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    S6_STAGE2_HOOK="/init-hook"
+
+RUN apk update && \
+    apk add \
+      tzdata musl-locales nano shadow \
+      openssh \
+      gnupg \
+      pass \
+      inotify-tools
+
+# Copy S6 configurations
+COPY --chmod=755 root/ /
+
+# Create SSH user
+RUN addgroup -g ${DGID} ${DGROUP} && \
+    adduser -D -h ${DHOME} -G ${DGROUP} -u ${DUID} -s /bin/bash ${DUSER}
+
+EXPOSE ${SSH_PORT:-2222}
+
+HEALTHCHECK --start-period=10s \
+            --start-interval=10s \
+            --interval=60s \
+            CMD \
+            nc -z localhost ${SSH_PORT:-2222}
+
+ENTRYPOINT ["/init"]

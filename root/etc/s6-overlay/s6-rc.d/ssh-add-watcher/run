@@ -1,0 +1,16 @@
+#!/command/with-contenv bash
+
+DHOME="${DHOME:-/home/$DUSER}"
+SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-$DHOME/.ssh/ssh-agent.sock}
+SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
+
+# Watch s6 environments for newly added ssh keys
+inotifywait -e create -m ${SSH_PRIVATE_KEYS_DIR} | \
+  while read dirname events basename
+  do
+    if [[ $(grep -w BEGIN $dirname/$basename 2> /dev/null)  ]]
+    then
+      echo "➕🔑  Detected SSH Keys: Adding to SSHD Agent..."
+      cat $dirname/$basename | ssh-add -   
+    fi
+  done

@@ -1,0 +1,15 @@
+#!/command/with-contenv bash
+
+DHOME="${DHOME:-"/home/$DUSER"}"
+
+# Configure SSH user
+mkdir -p ${DHOME}
+groupmod -g ${DGID} ${DGROUP}
+usermod -u ${DUID} ${DUSER} -g ${DGID} -d ${DHOME}
+chown -R ${DUSER}:${DGROUP} ${DHOME}
+
+echo "
+-------------------------------------
+👨 Running Services as User: $DUSER
+-------------------------------------
+"
