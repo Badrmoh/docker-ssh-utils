@@ -1,15 +1,7 @@
 # syntax=docker/dockerfile:1
-
 FROM alpine:3.20.2
 
 LABEL MAINTAINER=engbadr@outlook.com
-
-ENV S6_OVERLAY_VERSION=3.2.0.0
-
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 
 ENV DUID=1001 \
     DGID=1001 \
@@ -28,6 +20,7 @@ ENV SSH_HOST_KEY_DIR="${DHOME}/.ssh/ssh_host_keys" \
 
 RUN apk update && \
     apk add \
+      s6-overlay \
       tzdata musl-locales nano shadow \
       openssh \
       gnupg \
