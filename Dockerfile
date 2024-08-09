@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+
 FROM alpine:3.20.2
 
 LABEL MAINTAINER=engbadr@outlook.com
@@ -36,6 +37,7 @@ RUN addgroup -g ${DGID} ${DGROUP} && \
 
 EXPOSE ${SSH_PORT:-2222}
 
+# if openssh server is disabled, healthcheck will always fail
 HEALTHCHECK --start-period=10s \
             --start-interval=10s \
             --interval=60s \
