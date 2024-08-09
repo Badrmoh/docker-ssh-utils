@@ -1,5 +1,7 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/badrmoh/ssh-utils/build_and_publish.yml?branch=main&label=ci&logo=github&style=flat-square)](https://github.com/badrmoh/ssh-utils/actions?workflow=build_and_publish)
 
+---
+
 # About 
 
 SSH Utils is a Alpine based image, that contains ssh tools:
@@ -35,7 +37,7 @@ docker run -p $SSH_PORT \
     -e SSH_PORT=$SSH_PORT \
     -e SSH_PUBLIC_KEY1=$SSH_PUBLIC_KEY1 \
     -e SSH_PUBLIC_KEY1=$SSH_PUBLIC_KEY1 \
-    badrmoh/ssh-utils:v1.0 
+    ghcr.io/badrmoh/ssh-utils:v1.0 
 ```
 
 Once Docker Container is healthy:
@@ -55,7 +57,7 @@ docker run -p $SSH_PORT \
     -e SSH_AGENT_ENABLED=1 \
     -e SSH_PRIVATE_KEYS_DIR=$SSH_PRIVATE_KEYS_DIR \
     -v path-to-keys-on-host:$SSH_PRIVATE_KEYS_DIR \
-    badrmoh/ssh-utils:v1.0 
+    ghcr.io/badrmoh/ssh-utils:latest
 ```
 
 ## Use ssh-add watcher service with ssh-agent, openssh client and server
@@ -72,7 +74,7 @@ docker run -p $SSH_PORT \
     -e SSH_ADD_WATCHER_ENABLED=1 \
     -e SSH_PRIVATE_KEYS_DIR=$SSH_PRIVATE_KEYS_DIR \
     -v path-to-keys-on-host:$SSH_PRIVATE_KEYS_DIR \
-    badrmoh/ssh-utils:v1.0 
+    ghcr.io/badrmoh/ssh-utils:latest 
 ```
 
 ## Use host's ssh-agent with openssh client and disabled openssh server.
@@ -83,7 +85,7 @@ docker run -p $SSH_PORT \
     -e SSHD_ENABLED=false \
     -e SSH_AUTH_SOCK=$DOCKER_SSH_AUTH_SOCK \
     -v path-to-ssh-agents-sock-file:$DOCKER_SSH_AUTH_SOCK \
-    badrmoh/ssh-utils:v1.0 
+    ghcr.io/badrmoh/ssh-utils:latest
 ```
 
 
