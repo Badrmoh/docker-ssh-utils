@@ -1,6 +1,8 @@
-# SSH Utils
+[![Build](https://img.shields.io/github/actions/workflow/status/badrmoh/ssh-utils/build_and_publish.yml?branch=main&label=ci&logo=github&style=flat-square)](https://github.com/badrmoh/ssh-utils/actions?workflow=build_and_publish)
 
-Alpine based image, that contains ssh tools:
+# About 
+
+SSH Utils is a Alpine based image, that contains ssh tools:
 - openssh-server
 - openssh-client
 - ssh-agent
@@ -91,7 +93,8 @@ docker run -p $SSH_PORT \
 it is possible to use this pattern in situations where jump host is required.
 
 
-```                 ___________________________          ___________________
+```
+                    ___________________________          ___________________
                    |jump host|                 |        |                   |
                    |---------                  |        |                   |
   0                |        _____________      |        |                   |
