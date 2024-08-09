@@ -2,6 +2,7 @@
 
 DHOME=${DHOME:-/home/$DUSER}
 SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
+SSHD_ENABLED=${SSHD_ENABLED:-true}
 
 # Check if SSH host keys are missing
 if [ ! -f $SSH_HOST_KEY_DIR/ssh_host_rsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ecdsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ed25519_key ]; then
@@ -48,12 +49,13 @@ mkdir -p ${SSH_PRIVATE_KEYS_DIR}
 #
 if [[ ${SSHD_ENABLED,,} == "true" ]]
   then
-  SSH_PUBLIC_KEYS=($(env | grep SSH_PUBLIC_KEY))
-  echo "🗄 Adding public keys to user's authorized keys ..."
+  SSH_PUBLIC_KEYS=($(env | grep SSH_PUBLIC_KEY | cut -d'=' -f1))
   if [[ ${#SSH_PUBLIC_KEYS[@]} -gt 0 ]]
   then
+    echo "🗄 Adding public keys to user's authorized keys"
     for k in ${SSH_PUBLIC_KEYS[@]}; do
-       s6-printenv $k | tee -a ${DHOME}/.ssh/authorized_keys 
+      echo -n "➕🔑 Adding: "
+      printenv "${k}" | tee -a ${DHOME}/.ssh/authorized_keys 
     done
   fi
 fi
