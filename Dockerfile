@@ -27,6 +27,7 @@ RUN apk update && \
       s6-overlay \
       tzdata musl-locales nano shadow \
       openssh \
+      openssh-server-pam \
       gnupg \
       pass \
       inotify-tools

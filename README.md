@@ -25,6 +25,8 @@ SSH Utils is a Alpine based image, that contains ssh tools:
 |  SSH_ADD_WATCHER_ENABLED | If set (with any value), ssh-add will watch $SSH_KEYS_DIR, and adds private keys automatically when copied there |                false               |
 |       SSHD_ENABLED       |                              If set (with any value), OpenSSH Server will be started                             |                true                |
 |      SSH_PUBLIC_KEY*     |    Environment Variables starting with SSH_PUBLIC_KEY will be evaluated and added to authorized_keys of $DUSER   |                 ""                 |
+|      SSH_ACCEPT_ENV      |                     Set AcceptEnv for sshd. By default it accept no environment variables                        |                 !*                 |
+
 
 # Basic Usage
 

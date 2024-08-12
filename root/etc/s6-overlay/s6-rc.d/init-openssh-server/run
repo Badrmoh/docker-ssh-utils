@@ -1,7 +1,10 @@
 #!/command/with-contenv bash
 
+DUSER=${DUSER:-ssh-user}
 DHOME=${DHOME:-/home/$DUSER}
 SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
+SSH_PASSWORD_AUTH=${SSH_PASSWORD_AUTH:-no}
+SSH_ACCEPT_ENV=${SSH_ACCEPT_ENV:-!*}
 SSHD_ENABLED=${SSHD_ENABLED:-true}
 
 # Check if SSH host keys are missing
@@ -15,7 +18,38 @@ if [ ! -f $SSH_HOST_KEY_DIR/ssh_host_rsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_h
   mv /etc/ssh/ssh_host_*_key $SSH_HOST_KEY_DIR/
   mv /etc/ssh/ssh_host_*_key.pub $SSH_HOST_KEY_DIR/
 fi
-
+#########################################
+# Prepare Configurations
+#
+## Prepare User's SSH dir
+#
+echo "📂 Creating User SSH dirs ..."
+mkdir -p ${DHOME}/.ssh
+mkdir -p ${SSH_PRIVATE_KEYS_DIR}
+#
+## Add authorized keys
+#
+if [[ ${SSHD_ENABLED,,} == "true" ]]
+  then
+  SSH_PUBLIC_KEYS=($(env | grep SSH_PUBLIC_KEY | cut -d'=' -f1))
+  if [[ ${#SSH_PUBLIC_KEYS[@]} -gt 0 ]]
+  then
+    echo "🗄 Adding public keys to user's authorized keys"
+    for k in ${SSH_PUBLIC_KEYS[@]}; do
+      echo -n "➕🔑 Adding: "
+      printenv "${k}" | tee -a ${DHOME}/.ssh/authorized_keys 
+    done
+  else
+    ## Setup Password Authentication if no public key is provided
+    #
+    export SSH_USER_PASS=$(head -c 12 /dev/urandom | base64)
+    export SSH_PASSWORD_AUTH=yes
+    echo "🔢 Generating SSH Password: ${SSH_USER_PASS}"
+    echo "${SSH_USER_PASS}" | passwd ${DUSER} --stdin
+    echo -n yes > /var/run/s6/container_environment/SSH_PASSWORD_AUTH
+  fi
+fi
+#
 #########################################
 # OpenSSH Server configuration
 #
@@ -24,7 +58,9 @@ echo "🤖 Setting OpenSSH Server configuration..."
   echo "Port ${SSH_PORT}"
   echo "PermitRootLogin no"
   echo "PermitEmptyPasswords no"
-  echo "PasswordAuthentication no"
+  echo "PasswordAuthentication ${SSH_PASSWORD_AUTH}"
+  echo "UsePAM ${SSH_PASSWORD_AUTH}"
+  echo "AcceptEnv ${SSH_ACCEPT_ENV}"
   echo "MaxAuthTries 5"
   echo "LoginGraceTime 20"
   echo "ChallengeResponseAuthentication no"
@@ -38,28 +74,6 @@ echo "🤖 Setting OpenSSH Server configuration..."
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ed25519_key"
 } > /etc/ssh/sshd_config.d/custom.conf
 
-##########################################
-# Prepare User's SSH dir
-#
-echo "📂 Creating User SSH dirs ..."
-mkdir -p ${DHOME}/.ssh
-mkdir -p ${SSH_PRIVATE_KEYS_DIR}
-##########################################
-# Add authorized keys
-#
-if [[ ${SSHD_ENABLED,,} == "true" ]]
-  then
-  SSH_PUBLIC_KEYS=($(env | grep SSH_PUBLIC_KEY | cut -d'=' -f1))
-  if [[ ${#SSH_PUBLIC_KEYS[@]} -gt 0 ]]
-  then
-    echo "🗄 Adding public keys to user's authorized keys"
-    for k in ${SSH_PUBLIC_KEYS[@]}; do
-      echo -n "➕🔑 Adding: "
-      printenv "${k}" | tee -a ${DHOME}/.ssh/authorized_keys 
-    done
-  fi
-fi
-###########################################
 # Set Correct ownership
 #
 echo "🎫 Set correct ownership of user's home directory ..."

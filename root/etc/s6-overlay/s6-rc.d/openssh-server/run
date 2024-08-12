@@ -1,4 +1,10 @@
 #!/command/with-contenv bash
 
 echo "🚀 Starting SSHD..."
-s6-setuidgid "${DUSER}" /usr/sbin/sshd -D -e
+echo "🛡 SSHD PAM: ${SSH_PASSWORD_AUTH}"
+if [[ "${SSH_PASSWORD_AUTH}" == "yes" ]]
+then
+  s6-setuidgid "${DUSER}" /usr/sbin/sshd.pam -D -e
+else
+  s6-setuidgid "${DUSER}" /usr/sbin/sshd -D -e
+fi
