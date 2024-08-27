@@ -45,7 +45,7 @@ if [[ ${SSHD_ENABLED,,} == "true" ]]
     export SSH_USER_PASS=$(head -c 12 /dev/urandom | base64)
     export SSH_PASSWORD_AUTH=yes
     echo "🔢 Generating SSH Password: ${SSH_USER_PASS}"
-    echo "${SSH_USER_PASS}" | passwd ${DUSER} --stdin
+    echo -e "${SSH_USER_PASS}\n${SSH_USER_PASS}" | passwd ${DUSER}
     echo -n yes > /var/run/s6/container_environment/SSH_PASSWORD_AUTH
   fi
 fi
