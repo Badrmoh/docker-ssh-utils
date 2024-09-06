@@ -7,6 +7,7 @@ mkdir -p ${DHOME}
 groupmod -g ${DGID} ${DGROUP}
 usermod -u ${DUID} ${DUSER} -g ${DGID} -d ${DHOME}
 chown -R ${DUSER}:${DGROUP} ${DHOME}
+chown -R ${DUSER}:${DGROUP} ${HOME}/.[^.]*
 
 echo "
 -------------------------------------
