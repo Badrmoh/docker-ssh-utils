@@ -4,7 +4,7 @@
 
 # About 
 
-SSH Utils is a Alpine based image, that contains ssh tools:
+SSH Utils is a Alpine (optionally debian) based image, that contains some ssh tools:
 - openssh-server
 - openssh-client
 - ssh-agent
