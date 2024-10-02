@@ -55,8 +55,9 @@ jobs:
           file: ${{ matrix.base-image }}.Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ format('{0}-{1}', steps.meta.outputs.tags, matrix.base-image) }}
-            ${{ matrix.base-image == 'alpine' && 'latest' || '' }}
+            ${{ matrix.base-image }}
+            # ${{ steps.meta.outputs.tags }}-${{ matrix.base-image }}
+            # ${{ matrix.base-image == 'alpine' && 'latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: |
             linux/amd64
