@@ -2,8 +2,8 @@
 
 echo "🚀 Starting SSHD..."
 echo "🛡 SSHD PAM: ${SSH_PASSWORD_AUTH}"
-if [[ "${SSH_PASSWORD_AUTH}" == "yes" ]]
-then
+if [[ "${SSH_PASSWORD_AUTH}" == "yes" ]] && [[ $(grep -w alpine /etc/os-release > /dev/null &>2) ]]
+then 
   s6-setuidgid "${DUSER}" /usr/sbin/sshd.pam -D -e
 else
   s6-setuidgid "${DUSER}" /usr/sbin/sshd -D -e
