@@ -2,10 +2,9 @@ name: Docker
 
 on:
   push:
-    branches: [ "main" ]
     tags: [ 'v*.*', 'latest' ]
     paths:
-      - 'Dockerfile'
+      - '*Dockerfile'
       - 'root/**'
       - '.github/workflows/build_and_publish.yml'
 
