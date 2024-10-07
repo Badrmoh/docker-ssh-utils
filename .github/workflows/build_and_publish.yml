@@ -50,16 +50,16 @@ jobs:
       
       - name: Push Docker images latest-<base-image>
         run: |
-          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }}
+          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }} .
  
       - name: Push Docker images git_tag
         run: |
-          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-${{ matrix.base-image }}
+          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-${{ matrix.base-image }} .
 
       - name: Push Docker image latest tag
         run: |
-          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
-          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
+          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
 
       # - name: Extract Docker metadata
       #   id: meta
