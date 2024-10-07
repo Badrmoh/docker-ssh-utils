@@ -11,6 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: "badrmoh/ssh-utils"
+  DEFAULT_DOCKERFILE: "alpine.Dockerfile"
 
 jobs:
   build:
@@ -41,33 +42,52 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Get the Git tag
+        id: git_tag
+        run: |
+          git_tag=$(git describe --tags --abbrev=0)
+          echo "GIT_TAG=${git_tag}" >> $GITHUB_ENV
+      
+      - name: Push Docker images latest-<base-image>
+        run: |
+          docker push -f ${{ matrix.base-image }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }}
+ 
+      - name: Push Docker images git_tag
+        run: |
+          docker push -f ${{ matrix.base-image }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-${{ matrix.base-image }}
 
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ matrix.base-image }}.Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ format('{0}-{1}', steps.meta.outputs.tags, matrix.base-image) }}
-            ${{ matrix.base-image == 'alpine' && 'latest' || '' }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: |
-            linux/amd64
-            linux/arm/v7
-            linux/arm64/v8
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Push Docker image latest tag
+        run: |
+          docker push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}
+          docker push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ steps.meta.outputs.tags }}-${{ matrix.base-image }}
-          subject-digest: ${{ steps.build-and-push.outputs.digest }}
-          push-to-registry: true
+      # - name: Extract Docker metadata
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # - name: Build and push Docker image
+      #   id: build-and-push
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ${{ matrix.base-image }}.Dockerfile
+      #     push: ${{ github.event_name != 'pull_request' }}
+      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.base-image }}
+      #       # ${{ steps.meta.outputs.tags }}-${{ matrix.base-image }}
+      #       # ${{ matrix.base-image == 'alpine' && 'latest' || '' }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     platforms: |
+      #       linux/amd64
+      #       linux/arm/v7
+      #       linux/arm64/v8
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+
+      # - name: Generate artifact attestation
+      #   uses: actions/attest-build-provenance@v1
+      #   with:
+      #     subject-name: ${{ steps.meta.outputs.tags }}-${{ matrix.base-image }}
+      #     subject-digest: ${{ steps.build-and-push.outputs.digest }}
+      #     push-to-registry: true
