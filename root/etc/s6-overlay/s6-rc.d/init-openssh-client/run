@@ -1,0 +1,10 @@
+#!/command/with-contenv bash
+
+# OpenSSH Server configuration
+#
+echo "🤖 Setting SSH configuration..."
+{
+  echo "Host *"
+  echo "  ForwardAgent ${SSH_FORWARD_AGENT:-no}"
+  echo "  StrictHostKeyVerification ${SSH_STRICT_HOSTKEY_VERIFICATION:-no}"
+} > /etc/ssh/ssh_config.d/ssh_utils.conf

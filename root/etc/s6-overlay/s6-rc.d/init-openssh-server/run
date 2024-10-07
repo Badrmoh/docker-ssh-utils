@@ -73,7 +73,7 @@ echo "🤖 Setting OpenSSH Server configuration..."
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_rsa_key"
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ecdsa_key"
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ed25519_key"
-} > /etc/ssh/sshd_config.d/custom.conf
+} > /etc/ssh/sshd_config.d/ssh_utils.conf
 
 # Set Correct ownership
 #

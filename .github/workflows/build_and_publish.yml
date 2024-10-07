@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    tags: [ 'v*.*' ]
+    tags: [ 'v*.*' , 'latest' ]
     paths:
       - '*Dockerfile'
       - 'root/**'
@@ -48,17 +48,19 @@ jobs:
           git_tag=$(git describe --tags --abbrev=0)
           echo "GIT_TAG=${git_tag}" >> $GITHUB_ENV
       
-      - name: Push Docker images latest-<base-image>
-        run: |
-          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }} .
- 
       - name: Push Docker images git_tag
+        if: ${{ env.GIT_TAG != 'latest' }}
         run: |
           docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-${{ matrix.base-image }} .
 
-      - name: Push Docker image latest tag
+      - name: Push Docker images latest-<base-image>
+        if: ${{ env.GIT_TAG == 'latest' }}
         run: |
-          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
+          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }} .
+
+      - name: Push Docker image latest tag
+        if: ${{ env.GIT_TAG == 'latest' }}
+        run: |
           docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
 
       # - name: Extract Docker metadata

@@ -1,4 +1,4 @@
-[![Build](https://img.shields.io/github/actions/workflow/status/badrmoh/ssh-utils/build_and_publish.yml?tag=latest&label=ci&logo=github)](https://github.com/badrmoh/ssh-utils/actions?workflow=build_and_publish)
+[![Build](https://img.shields.io/github/actions/workflow/status/badrmoh/ssh-utils/build_and_publish.yml?label=latest&logo=github)](https://github.com/badrmoh/ssh-utils/actions?workflow=build_and_publish)
 
 ---
 
