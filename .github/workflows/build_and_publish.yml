@@ -58,8 +58,8 @@ jobs:
 
       - name: Push Docker image latest tag
         run: |
-          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
-          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }} .
+          docker buildx build --push -f ${{ env.DEFAULT_DOCKERFILE }} -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
 
       # - name: Extract Docker metadata
       #   id: meta
