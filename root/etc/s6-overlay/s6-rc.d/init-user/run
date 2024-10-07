@@ -3,9 +3,9 @@
 DHOME="${DHOME:-"/home/$DUSER"}"
 
 # Configure SSH user
+groupmod -g ${DGID} -n ${DGROUP} ssh-user
+usermod -u ${DUID} -g ${DGID} --login ${DUSER} --move-home --home ${DHOME} ssh-user
 mkdir -p ${DHOME}
-groupmod -g ${DGID} ${DGROUP}
-usermod -u ${DUID} ${DUSER} -g ${DGID} -d ${DHOME}
 chown -R ${DUSER}:${DGROUP} ${DHOME}
 chown -R ${DUSER}:${DGROUP} ${DHOME}/.[^.]*
 
