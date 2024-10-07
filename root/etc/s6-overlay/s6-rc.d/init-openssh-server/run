@@ -1,11 +1,12 @@
 #!/command/with-contenv bash
 
-DUSER=${DUSER:-ssh-user}
 DHOME=${DHOME:-/home/$DUSER}
 SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
 SSH_PASSWORD_AUTH=${SSH_PASSWORD_AUTH:-no}
 SSH_ACCEPT_ENV=${SSH_ACCEPT_ENV:-!*}
 SSHD_ENABLED=${SSHD_ENABLED:-true}
+SSH_HOST_KEY_DIR=${DHOME}/.ssh/ssh_host_keys"
+SSH_AUTH_SOCK=${DHOME}/.ssh/ssh-agent.sock
 
 # Check if SSH host keys are missing
 if [ ! -f $SSH_HOST_KEY_DIR/ssh_host_rsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ecdsa_key ] || [ ! -f $SSH_HOST_KEY_DIR/ssh_host_ed25519_key ]; then
@@ -60,7 +61,6 @@ echo "🤖 Setting OpenSSH Server configuration..."
   echo "PermitEmptyPasswords no"
   echo "PubkeyAcceptedAlgorithms +ssh-rsa"
   echo "PasswordAuthentication ${SSH_PASSWORD_AUTH}"
-  echo "UsePAM ${SSH_PASSWORD_AUTH}"
   echo "AcceptEnv ${SSH_ACCEPT_ENV}"
   echo "MaxAuthTries 5"
   echo "LoginGraceTime 20"
@@ -73,7 +73,12 @@ echo "🤖 Setting OpenSSH Server configuration..."
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_rsa_key"
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ecdsa_key"
   echo "HostKey ${SSH_HOST_KEY_DIR}/ssh_host_ed25519_key"
-} > /etc/ssh/sshd_config.d/ssh_utils.conf
+} | tee -a /etc/ssh/sshd_config.d/ssh_utils.conf
+
+if [[ ${SSH_PASSWORD_AUTH} == "yes"  ]]
+then
+  echo "UsePAM yes" | tee -a /etc/ssh/sshd_config.d/ssh_utils.conf
+fi
 
 # Set Correct ownership
 #

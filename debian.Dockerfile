@@ -9,11 +9,7 @@ ENV DUID=1001 \
     DUSER="ssh-user" \
     DGROUP="ssh-user" \
     DHOME="/home/ssh-user" \
-    SSH_PORT=2222
-
-ENV SSH_HOST_KEY_DIR="/etc/ssh/ssh_host_keys" \
-    SSH_AUTH_SOCK="${DHOME}/.ssh/ssh-agent.sock" \
-    SSH_PRIVATE_KEYS_DIR="${DHOME}/.ssh/private" \
+    SSH_PORT=2222 \
     SSHD_ENABLED="true" \
     SSH_AGENT_ENABLED="false" \
     SSH_ADD_WATCHER_ENABLED="false" \

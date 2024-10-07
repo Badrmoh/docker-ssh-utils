@@ -7,7 +7,7 @@ groupmod -g ${DGID} -n ${DGROUP} ssh-user
 usermod -u ${DUID} -g ${DGID} --login ${DUSER} --move-home --home ${DHOME} ssh-user
 mkdir -p ${DHOME}
 chown -R ${DUSER}:${DGROUP} ${DHOME}
-chown -R ${DUSER}:${DGROUP} ${DHOME}/.[^.]*
+find ${DHOME} -name "\.*" -exec chown ${DUSER}:${DGROUP} {} \;
 
 echo "
 -------------------------------------
