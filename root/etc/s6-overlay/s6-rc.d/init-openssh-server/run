@@ -5,7 +5,7 @@ SSH_PRIVATE_KEYS_DIR=${SSH_PRIVATE_KEYS_DIR:-$DHOME/.ssh/private}
 SSH_PASSWORD_AUTH=${SSH_PASSWORD_AUTH:-no}
 SSH_ACCEPT_ENV=${SSH_ACCEPT_ENV:-!*}
 SSHD_ENABLED=${SSHD_ENABLED:-true}
-SSH_HOST_KEY_DIR=${DHOME}/.ssh/ssh_host_keys"
+SSH_HOST_KEY_DIR=${DHOME}/.ssh/ssh_host_keys
 SSH_AUTH_SOCK=${DHOME}/.ssh/ssh-agent.sock
 
 # Check if SSH host keys are missing
@@ -83,7 +83,7 @@ fi
 # Set Correct ownership
 #
 echo "🎫 Set correct ownership of user's home directory ..."
-chown -R ${DUSER}:${PGROUP} ${DHOME}/.ssh
-chown -R ${DUSER}:${PGROUP} ${SSH_PRIVATE_KEYS_DIR}
+chown -R ${DUSER}:${DGROUP} ${DHOME}/.ssh
+chown -R ${DUSER}:${DGROUP} ${SSH_PRIVATE_KEYS_DIR}
 chmod 700 ${DHOME}/.ssh
 chmod 700 ${SSH_PRIVATE_KEYS_DIR}
