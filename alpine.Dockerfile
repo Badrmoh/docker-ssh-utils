@@ -8,6 +8,7 @@ ENV DUID=1001 \
     DGID=1001 \
     DUSER="ssh-user" \
     DGROUP="ssh-user" \
+    DHOME="/home/ssh-user" \
     SSH_PORT=2222 \
     SSHD_ENABLED="true" \
     SSH_AGENT_ENABLED="false" \

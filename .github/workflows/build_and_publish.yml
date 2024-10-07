@@ -17,10 +17,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        base-image: [alpine, debian]
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     base-image: [alpine, debian]
 
     permissions:
       contents: read
@@ -51,12 +51,14 @@ jobs:
       - name: Push Docker images git_tag
         if: ${{ env.GIT_TAG != 'latest' }}
         run: |
-          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-${{ matrix.base-image }} .
+          docker buildx build --push -f alpine.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-alpine .
+          docker buildx build --push -f debian.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GIT_TAG }}-debian .
 
       - name: Push Docker images latest-<base-image>
         if: ${{ env.GIT_TAG == 'latest' }}
         run: |
-          docker buildx build --push -f ${{ matrix.base-image }}.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-${{ matrix.base-image }} .
+          docker buildx build --push -f alpine.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-alpine .
+          docker buildx build --push -f debian.Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-debian .
 
       - name: Push Docker image latest tag
         if: ${{ env.GIT_TAG == 'latest' }}
