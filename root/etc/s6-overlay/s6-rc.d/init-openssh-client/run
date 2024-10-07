@@ -6,5 +6,5 @@ echo "🤖 Setting SSH configuration..."
 {
   echo "Host *"
   echo "  ForwardAgent ${SSH_FORWARD_AGENT:-no}"
-  echo "  StrictHostKeyVerification ${SSH_STRICT_HOSTKEY_VERIFICATION:-no}"
+  echo "  StrictHostKeyChecking ${SSH_STRICT_HOSTKEY_CHECKING:-no}"
 } > /etc/ssh/ssh_config.d/ssh_utils.conf

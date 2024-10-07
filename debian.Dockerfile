@@ -11,7 +11,7 @@ ENV DUID=1001 \
     DHOME="/home/ssh-user" \
     SSH_PORT=2222
 
-ENV SSH_HOST_KEY_DIR="${DHOME}/.ssh/ssh_host_keys" \
+ENV SSH_HOST_KEY_DIR="/etc/ssh/ssh_host_keys" \
     SSH_AUTH_SOCK="${DHOME}/.ssh/ssh-agent.sock" \
     SSH_PRIVATE_KEYS_DIR="${DHOME}/.ssh/private" \
     SSHD_ENABLED="true" \
