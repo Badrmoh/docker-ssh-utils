@@ -24,3 +24,4 @@ then
   done
 fi
 
+echo ${SSH_AUTH_SOCK} > /var/run/s6/container_environment/SSH_AUTH_SOCK
