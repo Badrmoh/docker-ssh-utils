@@ -4,28 +4,30 @@
 
 # About 
 
-SSH Utils is a Alpine (optionally debian) based image, that contains some ssh tools:
-- openssh-server
+Tools:
+- openssh-server (with PAM support)
 - openssh-client
 - ssh-agent
-- ssh-add
+- ssh-add-watcher (for automatically detecting and running ssh-add for mounted ssh private keys)
 
 # Available Configurations
 | **Environment Variable** |                                                  **Description**                                                 |             **Default**            |
-|:------------------------:|:----------------------------------------------------------------------------------------------------------------:|:----------------------------------:|
-|           DUSER          |                                              Run as docker username                                              |              ssh-user              |
-|          DGROUP          |                                              Run as docker groupname                                             |              ssh-user              |
-|           DPID           |                                                 Run as docker uid                                                |                1001                |
-|           DGID           |                                                 Run as docker gid                                                |                1001                |
-|         SSH_PORT         |                                            OpenSSH Server listen port                                            |                2222                |
-|     SSH_HOST_KEY_DIR     |                                            SSH host key directory path                                           |  /home/ssh-user/.ssh/ssh_host_keys |
-|       SSH_AUTH_SOCK      |                                           SSH Agent listen socket path                                           | /home/ssh-user/.ssh/ssh-agent.sock |
-|  SSH_PRIVATE_KEYS_DIR    |           When private keys are mounted in this directory, it will be automatically imported by ssh-add          |    /home/ssh-user/.ssh/private     |
-|     SSH_AGENT_ENABLED    |                                If set (with any value), ssh-agent will be started                                |                false               |
-|  SSH_ADD_WATCHER_ENABLED | If set (with any value), ssh-add will watch $SSH_KEYS_DIR, and adds private keys automatically when copied there |                false               |
-|       SSHD_ENABLED       |                              If set (with any value), OpenSSH Server will be started                             |                true                |
-|      SSH_PUBLIC_KEY*     |    Environment Variables starting with SSH_PUBLIC_KEY will be evaluated and added to authorized_keys of $DUSER   |                 ""                 |
-|      SSH_ACCEPT_ENV      |                     Set AcceptEnv for sshd. By default it accept no environment variables                        |                 !*                 |
+|:-------------------------------:|:----------------------------------------------------------------------------------------------------------------:|:----------------------------------:|
+|                  DUSER                 |                                              Run as docker username                                              |              ssh-user              |
+|                 DGROUP                 |                                              Run as docker groupname                                             |              ssh-user              |
+|                  DPID                  |                                                 Run as docker uid                                                |                1001                |
+|                  DGID                  |                                                 Run as docker gid                                                |                1001                |
+|                SSH_PORT                |                                            OpenSSH Server listen port                                            |                2222                |
+|            SSH_HOST_KEY_DIR            |                                            SSH host key directory path                                           |  /home/ssh-user/.ssh/ssh_host_keys |
+|              SSH_AUTH_SOCK             |                                           SSH Agent listen socket path                                           | /home/ssh-user/.ssh/ssh-agent.sock |
+|         SSH_PRIVATE_KEYS_DIR           |           When private keys are mounted in this directory, it will be automatically imported by ssh-add          |    /home/ssh-user/.ssh/private     |
+|            SSH_AGENT_ENABLED           |                                If set (with any value), ssh-agent will be started                                |                false               |
+|         SSH_ADD_WATCHER_ENABLED        | If set (with any value), ssh-add will watch $SSH_KEYS_DIR, and adds private keys automatically when copied there |                false               |
+|              SSHD_ENABLED              |                              If set (with any value), OpenSSH Server will be started                             |                true                |
+|             SSH_PUBLIC_KEY*            |    Environment Variables starting with SSH_PUBLIC_KEY will be evaluated and added to authorized_keys of $DUSER   |                 ""                 |
+|             SSH_ACCEPT_ENV             |                     Set AcceptEnv for sshd. By default it accept no environment variables                        |                 !*                 |
+|       SSH_STRICT_HOSTKEY_CHECKING      |                                         Configure StrictHostKeyChecking option                                   |                 no                 |
+|            SSH_FORWARD_AGENT           |                                              Configure ForwardAgent option                                       |                 no                 |
 
 
 # Basic Usage
@@ -33,12 +35,14 @@ SSH Utils is a Alpine (optionally debian) based image, that contains some ssh to
 ## Use openssh-server with multiple ssh public keys
 ```
 export SSH_PORT=2224
+# As long as variable name starts with SSH_PUBLIC_KEY, any suffix can be used.
+# e.g. SSH_PUBLIC_KEY_HOST1
 export SSH_PUBLIC_KEY1=$(cat path-to-1stuser's-public-key)
 export SSH_PUBLIC_KEY2=$(cat path-to-2snduser's-public-key)
 docker run -p $SSH_PORT \
     -e SSH_PORT=$SSH_PORT \
     -e SSH_PUBLIC_KEY1=$SSH_PUBLIC_KEY1 \
-    -e SSH_PUBLIC_KEY1=$SSH_PUBLIC_KEY1 \
+    -e SSH_PUBLIC_KEY2=$SSH_PUBLIC_KEY2 \
     ghcr.io/badrmoh/ssh-utils:v1.0 
 ```
 
