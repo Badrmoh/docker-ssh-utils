@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM alpine:3.20.2
+FROM alpine:3.24.4
 
 LABEL MAINTAINER=engbadr@outlook.com
 
