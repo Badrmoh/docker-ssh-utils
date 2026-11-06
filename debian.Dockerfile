@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 LABEL MAINTAINER=engbadr@outlook.com
 
@@ -38,7 +38,7 @@ RUN groupadd -g ${DUID} ${DGROUP} \
       -s /bin/bash \
       -u ${DUID} \
       -g ${DGROUP} \
-      ${DUSER} 
+      ${DUSER}
 
 EXPOSE ${SSH_PORT:-2222}
 
